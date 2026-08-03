@@ -1,32 +1,32 @@
-# React + TypeScript + Vite
+# Accessible Component Playground
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Standalone practice folder for **FE-05: Accessible Component Fundamentals**.
 
-Currently, two official plugins are available:
+Three interactive components built **from scratch** (no component libraries)
+against the W3C ARIA Authoring Practices Guide, plus a comparison with
+shadcn/ui.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Components
 
-## React Compiler
+- `src/components/Modal.tsx` — APG Dialog (Modal): focus trap, Escape, focus restore
+- `src/components/Tabs.tsx` — APG Tabs: arrow keys, Home/End, `aria-selected`
+- `src/components/Disclosure.tsx` — APG Disclosure: `aria-expanded`, `aria-controls`
+- `src/components/ui/` — shadcn/ui-style wrappers around Radix UI (for comparison)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Test (keyboard-only, simulated real key events)
+
+```bash
+npm test
+```
+
+## Learnings
+
+See `NOTES.md` — the concrete gaps between my hand-built components and
+shadcn/ui (body scroll lock, background `aria-hidden`, portals, focus scoping).
