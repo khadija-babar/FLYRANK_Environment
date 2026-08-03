@@ -9,18 +9,31 @@ const DEFAULT_SETTINGS: Settings = {
   storeUrls: [],
 };
 
+function isClient() {
+  return typeof window !== "undefined";
+}
+
+function readStored(): Settings {
+  if (!isClient()) return DEFAULT_SETTINGS;
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as Settings) : DEFAULT_SETTINGS;
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
 export function useSettings() {
-  const [settings, setSettings] = useState<Settings>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
-  });
+  const [settings, setSettings] = useState<Settings>(readStored);
   const [status, setStatus] = useState<SaveStatus>("idle");
 
   const saveSettings = useCallback(async (data: Settings) => {
     setStatus("saving");
     try {
       await new Promise((r) => setTimeout(r, 500));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (isClient()) {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
       setSettings(data);
       setStatus("success");
       setTimeout(() => setStatus("idle"), 2000);
@@ -30,7 +43,9 @@ export function useSettings() {
   }, []);
 
   const resetSettings = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    if (isClient()) {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
     setSettings(DEFAULT_SETTINGS);
     setStatus("idle");
   }, []);
