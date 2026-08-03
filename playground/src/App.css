@@ -1,0 +1,56 @@
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.playground {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 26px;
+}
+
+.sub {
+  margin: 0 0 28px;
+  color: #475569;
+  font-size: 15px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.card button {
+  background: #4f28e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background: #3f1fc9;
+}
+
+.hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
