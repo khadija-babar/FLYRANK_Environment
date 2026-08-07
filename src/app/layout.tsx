@@ -38,6 +38,9 @@ export default function RootLayout({
                   <li key={link.href}>
                     <Link
                       href={link.href}
+                      // Don't prefetch the heavy /chat route from the header;
+                      // it pulls the AI SDK bundle into every page's audit.
+                      prefetch={link.href === "/chat" ? false : undefined}
                       className="block rounded-md px-2.5 py-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     >
                       {link.label}

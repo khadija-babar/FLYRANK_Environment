@@ -1,10 +1,22 @@
 # SmartCart Lite
 
-AI-assisted price comparison across your favorite stores. Built as the capstone
-for the FlyRank Frontend AI Engineering internship.
-
 **Live:** https://flyrank-environment.vercel.app
 **AI assistant:** https://flyrank-environment.vercel.app/chat
+**Repository:** https://github.com/khadija-babar/FLYRANK_Environment
+
+## Project brief
+
+Shoppers who track the same products across multiple stores waste time manually
+comparing prices and trusting whichever listing is most recent. SmartCart Lite
+solves that with an AI assistant that compares equivalent products across the
+stores a user tracks and names the cheapest option with a one-line reason. It is
+for budget-conscious shoppers who want the best price without building a
+spreadsheet — and it doubles as the capstone that proves I can ship a
+production, AI-integrated web app end to end. I chose this idea because price
+comparison is a real, understandable problem with a clear success signal
+(an accurate comparison), which forced me to design the AI integration as a
+genuine feature — a streaming assistant with a strict "never invent prices"
+rule — rather than a decorative chatbot.
 
 ## What it does
 
@@ -108,8 +120,7 @@ thinking indicator) with `useChat` mocked.
 ## Run locally
 
 ```bash
-npm install
-npm run dev
+npm install && npm run dev
 # open http://localhost:3000
 ```
 
@@ -125,14 +136,32 @@ npm start
 
 ## Quality gate
 
-The deployed site is audited with Lighthouse (production URL):
+The deployed site is audited with Lighthouse and axe on the production URL:
 
-- Performance ≥ 88
-- Accessibility 100
-- Best practices 100
-- SEO 100
-- Zero console errors (a missing favicon that caused a 404 was fixed by wiring
-  `/favicon.svg` into the app metadata)
+- Performance 90 (mobile), Accessibility 100, Best practices 100, SEO 100
+- axe: 0 WCAG 2.1 A/AA violations on `/`, `/chat`, and `/settings`
+- Zero console errors
+
+### Two concrete fixes from the audits
+
+1. **Missing favicon (best-practices 96 → 100).** The app served no favicon, so
+   browsers requested `/favicon.ico` and hit a 404 console error. Fix: wired
+   `/favicon.svg` into the app metadata.
+2. **Low-contrast empty state (axe serious violation).** The chat empty-state
+   hint used `text-slate-400` (2.45:1 contrast — failed AA's 4.5:1). Fix:
+   `text-slate-500` (4.55:1). axe now reports 0 violations across all pages.
+
+## How it fails safely
+
+- **Missing server API key:** the `/api/chat` route returns a clear 500 with
+  `"Server API key is not configured."` instead of a stack trace. It never ships
+  the key to the client.
+- **LLM/provider errors:** streaming failures surface through the AI SDK as a
+  terminal message in the chat; the input stays usable and the user can retry.
+- **Corrupted settings:** `useSettings` wraps `localStorage` reads in try/catch
+  and falls back to defaults rather than crashing.
+- **Form errors:** the settings form uses zod validation and shows inline,
+  accessible error messages (`role="alert"`) for bad URLs or short API keys.
 
 ## Known limitations
 

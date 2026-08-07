@@ -45,7 +45,7 @@ export function Chat() {
       <div ref={containerRef} className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto flex max-w-2xl flex-col gap-4">
           {messages.length === 0 && (
-            <p className="py-12 text-center text-sm text-slate-400">
+            <p className="py-12 text-center text-sm text-slate-500">
               Ask SmartCart to compare prices, e.g. &quot;Cheapest 24-pack AA batteries
               across my stores?&quot;
             </p>

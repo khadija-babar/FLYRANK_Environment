@@ -10,11 +10,30 @@
 | 4 | Server-only API key (never in client bundle) | ✅ Done | Key read from `process.env.GOOGLE_GENERATIVE_AI_API_KEY` in `/api/chat`; missing key → clear 500 message |
 | 5 | Automated tests present and passing | ✅ Done | 23 tests, 5 files, Vitest |
 | 6 | Coverage at or above the 50% statement bar | ✅ Done | 86.5% statements (v8) |
-| 7 | Lighthouse audit passes the ≥85 bar | ✅ Done | Performance 89, Accessibility 100, Best practices 100, SEO 100 |
+| 7 | Lighthouse audit passes the ≥85 bar | ✅ Done | Performance 90, Accessibility 100, Best practices 100, SEO 100 |
 | 8 | Zero console errors | ✅ Done | Fixed missing favicon 404 (wired `/favicon.svg` in metadata) |
-| 9 | README documents architecture + AI integration | ✅ Done | `README.md` rewritten |
-| 10 | Known limitations documented honestly | ✅ Done | `README.md` "Known limitations" section |
-| 11 | Committed and pushed to GitHub | ✅ Done | Branch `main`, https://github.com/khadija-babar/FLYRANK_Environment |
+| 9 | axe: no WCAG A/AA violations | ✅ Done | 0 violations on `/`, `/chat`, `/settings` (fixed a 2.45:1 contrast failure) |
+| 10 | README documents architecture + AI integration | ✅ Done | `README.md` rewritten |
+| 11 | Known limitations documented honestly | ✅ Done | `README.md` "Known limitations" section |
+| 12 | Rollback plan documented | ✅ Done | See below |
+| 13 | Committed and pushed to GitHub | ✅ Done | Branch `main`, https://github.com/khadija-babar/FLYRANK_Environment |
+
+## Rollback plan & monitoring
+
+- **Rollback:** Vercel keeps every production deployment with its URL hash. If a
+  deploy breaks, either run `vercel --prod` from the last good commit (main is
+  the source of truth — `git revert`/reset then redeploy), or open the Vercel
+  dashboard → Deployments → select the previous green deployment → **Promote to
+  Production**. Target is seconds, not minutes.
+- **Monitoring:** the `/health` route fetches live data from a public API and
+  falls back to local data if unreachable, so uptime is visible from the URL
+  itself. Vercel logs server errors per deployment; the chat route surfaces
+  missing-key and provider errors as readable responses rather than silent
+  failures.
+- **Secrets safety:** the only secret (`GOOGLE_GENERATIVE_AI_API_KEY`) lives as
+  a Vercel environment variable and in gitignored `.env.local`. Nothing sensitive
+  is in the repo, so `main` is always safe to redeploy from.
+
 
 ## How I verified (real evidence, not assumptions)
 
@@ -26,7 +45,12 @@
   environment variable; the client bundle contains no secret. When the var is
   absent the route answers with a readable error rather than a stack trace.
 - **Lighthouse measured on the deployed URL**, not localhost, on mobile
-  settings. Best practices moved from 96 → 100 after the favicon fix.
+  settings. Median performance across three runs is 90; best-practices moved
+  from 96 → 100 after the favicon fix, and the prefetch change cut unused JS on
+  the home page from 91 KB to 30 KB.
+- **axe run with axe-core against the live pages**, not just Lighthouse's
+  built-in checks. It caught a real `color-contrast` serious violation on
+  `/chat` (2.45:1) that I then fixed (4.55:1) and re-verified to 0 violations.
 - **Coverage is computed by v8** over `src/components` and `src/hooks` — the
   real bar from the rubric, not a hand-wave.
 
@@ -73,5 +97,5 @@ makes it shippable. The hard parts here were not "write a chat box." They were:
 
 SmartCart Lite is live on Vercel, streams real Gemini answers through a
 server-side route, keeps its secret out of the client, passes a 50%+ coverage
-bar with 23 passing tests, and audits at 89/100/100/100 with zero console
-errors.
+bar with 23 passing tests, audits at 90/100/100/100, and passes axe with 0
+WCAG A/AA violations.
