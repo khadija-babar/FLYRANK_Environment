@@ -12,8 +12,10 @@
 import { google } from "@ai-sdk/google";
 
 // The model used for streaming chat responses.
-// - gemini-2.0-flash: fast, cheap, good for chat. Update freely.
-export const MODEL_ID = "gemini-2.0-flash";
+// - gemini-flash-latest: Google's current fast/cheap chat model. The generic
+//   "latest" alias avoids needing model-name updates whenever Google retires a
+//   numbered version (2.0-flash / 2.5-flash were retired for new keys in 2026).
+export const MODEL_ID = "gemini-flash-latest";
 
 // The model instance bound to the system prompt. Model-level tuning (like
 // temperature) moved to call settings in the AI SDK v4 provider API, so it
