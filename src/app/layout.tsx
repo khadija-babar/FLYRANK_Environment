@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "SmartCart Lite",
   description: "AI-assisted price comparison across your favorite stores.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 const navLinks = [

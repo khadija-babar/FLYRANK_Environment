@@ -13,6 +13,8 @@ dist-ssr
 *.local
 .next
 out
+coverage
+coverage/
 
 # Environment variables — never commit secrets
 .env
@@ -31,3 +33,4 @@ out
 *.njsproj
 *.sln
 *.sw?
+.vercel
