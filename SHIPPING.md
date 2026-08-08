@@ -56,42 +56,40 @@
 
 ## Reflection
 
-### What the capstone actually proves
+### What was hardest? Why?
 
-The assignment asks for a live, AI-integrated web app plus the quality work that
-makes it shippable. The hard parts here were not "write a chat box." They were:
+Streaming chat UX. The naive version auto-scrolled unconditionally on every
+token, which yanked the user down mid-read — so I rebuilt it as pin-to-bottom
+scrolling that releases the instant the user scrolls up, plus a "jump to
+latest" affordance when content arrives while scrolled up, and a thinking
+indicator so there's no flicker gap before the first token. The state problem
+was the trap: after `stop()`, the partial message must persist, input must
+re-enable, and the next send must start a fresh turn. "Stop, then send again"
+is a small interaction, but it forced me to think through the whole streaming
+state machine rather than just wiring up a text box.
 
-1. **Streaming chat that doesn't feel broken.** A naive auto-scroll yanks the
-   user down mid-read. I built pin-to-bottom scrolling that releases the moment
-   the user scrolls up and shows a "Jump to latest" affordance instead — plus a
-   thinking indicator before the first token so the handoff has no flicker gap,
-   and a Stop control that leaves state in a clean, resendable position.
-2. **A server route that is honest about failures.** Missing API key → a clear
-   message, not a 500 stack trace.
-3. **Config that is safe to change.** Model + system prompt live in exactly one
-   file (`src/lib/ai-config.ts`), so future swaps (e.g. Gemini → Anthropic) are
-   a one-line change instead of a hunt through components.
-4. **Tests for the risky parts.** Form validation (zod), localStorage
-   persistence incl. corrupted-JSON fallback, auto-scroll pinned/stale/jump
-   behavior, and the chat UI with `useChat` mocked. 86.5% statement coverage is
-   comfortable margin over the 50% bar.
-
-### What I'd do differently / next steps
+### What would I do differently next time?
 
 - **Real product data.** `/products`, `/compare`, and `/cart` are honest
-  placeholders. The next step is wiring listings to a real store API (or a
-  scraper-friendly feed) so the assistant compares real, current prices instead
-  of asking the user to paste them.
+  placeholders. Next time I'd wire listings to a real store API (or a
+  scraper-friendly feed) so the assistant compares real, current prices
+  instead of asking the user to paste them.
 - **Provider tuning.** I defaulted to `gemini-flash-latest` because of the free
   tier; a production app would A/B model choice and temperature per task.
 - **Account-backed settings.** Settings live in `localStorage` per browser
   today; a real product would persist them to a backend so the assistant
   follows the user across devices.
-- **One correction I'm glad I made.** I initially targeted a now-retired
-  numbered Gemini model, and only discovered it while testing the live
-  endpoint (it 404/429'd on new keys). Moving to the `latest` alias removed the
-  model-name treadmill entirely — a good lesson in preferring stable aliases
-  over pinned versions for fast-moving APIs.
+
+### One thing that surprised me
+
+That the AI SDK version difference was a breaking API change, not a patch — I
+spent a full FE-06 session chasing it (retired model names returned 404/429 on
+new keys, and `temperature` moved from the provider constructor to the request
+settings). It taught me to read changelogs before upgrading and to prefer
+stable aliases like `gemini-flash-latest` over pinned numbered versions. Also
+surprising: a tiny contrast fix (one Tailwind class) was the only WCAG AA
+violation axe found — the accessibility bar was much closer to met than I
+feared, but it still required the audit to catch it.
 
 ### Shipped, in one line
 

@@ -50,6 +50,44 @@ configure the AI API key, model, and the list of store URLs they track.
    shipped to the browser. If it is missing, the route returns a clear message
    instead of a confusing 500.
 
+### The prompt, and why it's written this way
+
+The system prompt (the only copy that governs behavior, in
+`src/lib/ai-config.ts`) is:
+
+```
+You are SmartCart, the price-comparison assistant inside the SmartCart Lite app.
+Your job: help the user compare prices for equivalent products across the
+stores they track. They will describe a product they want (e.g. "which store
+has the cheapest 24-pack of AA batteries?") or paste product listings.
+
+Follow these rules:
+- Be direct, warm, technical but plain. No fluff, no filler phrases.
+- When comparing, list each store with its price and the winner clearly
+  (e.g. "Cheapest: Store B at $12.99").
+- If the user gives vague or incomplete product info, ask ONE targeted
+  clarifying question before guessing.
+- Never invent prices or store names. If you don't have a real price, say you
+  need current data and ask them to paste it.
+- Keep answers short. One comparison + a one-line reason.
+```
+
+Why these choices:
+
+- **"Never invent prices or store names"** is the most important line. The
+  assistant has no live store feed, so the only safe behavior is to refuse to
+  fabricate data — a confident wrong price would be worse than no answer. This
+  rule turns a real product limitation into a designed failure mode (FE-07
+  resilience: the AI asks for data rather than hallucinating it).
+- **"Ask ONE targeted clarifying question"** is a structured fallback for vague
+  input — bounded, so the assistant can't interrogate the user into a corner.
+- **"List each store with its price and the winner clearly"** makes output
+  parseable for a shopper comparing options, not just prose.
+- **"Direct, warm, technical but plain"** is the brand voice from the start of
+  the internship; it keeps responses short and readable.
+- The temperature is set per-request (`0.7`) in the route — warm enough to be
+  conversational, low enough to stay on-task for a factual comparison task.
+
 Streaming UX details:
 
 - A **thinking indicator** shows before the first token arrives, so there is no
